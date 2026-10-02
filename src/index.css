@@ -1,0 +1,139 @@
+@import "tailwindcss";
+
+@layer base {
+  body {
+    font-family: 'Fredoka', system-ui, -apple-system, sans-serif;
+  }
+}
+
+.font-pixel {
+  font-family: 'Press Start 2P', monospace;
+}
+
+.font-fredoka {
+  font-family: 'Fredoka', cursive, sans-serif;
+}
+
+/* Mario 3D Bevel Buttons */
+.mario-btn-yellow {
+  background: linear-gradient(180deg, #FDE047 0%, #EAB308 100%);
+  border-bottom: 4px solid #CA8A04;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.2), inset 0 2px 0 rgba(255, 255, 255, 0.4);
+}
+.mario-btn-yellow:active {
+  transform: translateY(2px);
+  border-bottom-width: 2px;
+}
+
+.mario-btn-red {
+  background: linear-gradient(180deg, #EF4444 0%, #DC2626 100%);
+  border-bottom: 4px solid #991B1B;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.25), inset 0 2px 0 rgba(255, 255, 255, 0.3);
+}
+.mario-btn-red:active {
+  transform: translateY(2px);
+  border-bottom-width: 2px;
+}
+
+.mario-btn-green {
+  background: linear-gradient(180deg, #22C55E 0%, #16A34A 100%);
+  border-bottom: 4px solid #166534;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.2), inset 0 2px 0 rgba(255, 255, 255, 0.35);
+}
+.mario-btn-green:active {
+  transform: translateY(2px);
+  border-bottom-width: 2px;
+}
+
+.mario-btn-blue {
+  background: linear-gradient(180deg, #38BDF8 0%, #0284C7 100%);
+  border-bottom: 4px solid #0369A1;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.2), inset 0 2px 0 rgba(255, 255, 255, 0.35);
+}
+.mario-btn-blue:active {
+  transform: translateY(2px);
+  border-bottom-width: 2px;
+}
+
+/* Question Mark Block Box */
+.mario-question-box {
+  background: linear-gradient(180deg, #FBBF24 0%, #D97706 100%);
+  border: 4px solid #78350F;
+  box-shadow: inset 3px 3px 0 #FDE68A, inset -3px -3px 0 #92400E, 0 8px 15px rgba(0, 0, 0, 0.25);
+  position: relative;
+}
+
+.mario-brick-box {
+  background: linear-gradient(180deg, #B45309 0%, #92400E 100%);
+  border: 4px solid #451A03;
+  box-shadow: inset 3px 3px 0 #D97706, inset -3px -3px 0 #78350F, 0 6px 12px rgba(0, 0, 0, 0.2);
+}
+
+.mario-letter-slot {
+  background: #FFFFFF;
+  border: 3px solid #1E293B;
+  box-shadow: inset 0 3px 6px rgba(0, 0, 0, 0.15), 0 4px 0 #0F172A;
+}
+
+.mario-letter-slot.active {
+  border-color: #F59E0B;
+  box-shadow: 0 0 0 3px #FDE68A, inset 0 2px 4px rgba(245, 158, 11, 0.2), 0 4px 0 #D97706;
+}
+
+.mario-key {
+  background: linear-gradient(180deg, #FFFFFF 0%, #F1F5F9 100%);
+  border: 2px solid #CBD5E1;
+  border-bottom: 4px solid #94A3B8;
+  box-shadow: 0 3px 6px rgba(0, 0, 0, 0.08);
+  transition: all 0.08s ease;
+  user-select: none;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.mario-key:active {
+  transform: translateY(2px);
+  border-bottom-width: 2px;
+  background: #E2E8F0;
+}
+
+/* Floating animation */
+@keyframes marioFloat {
+  0%, 100% { transform: translateY(0px); }
+  50% { transform: translateY(-8px); }
+}
+
+.animate-mario-float {
+  animation: marioFloat 3s ease-in-out infinite;
+}
+
+/* Coin pop animation */
+@keyframes coinPop {
+  0% { transform: translateY(0) scale(0.5); opacity: 0; }
+  35% { transform: translateY(-50px) scale(1.25); opacity: 1; }
+  70% { transform: translateY(-80px) scale(1.1); opacity: 1; }
+  100% { transform: translateY(-100px) scale(0.9); opacity: 0; }
+}
+
+.animate-coin-pop {
+  animation: coinPop 0.9s cubic-bezier(0.18, 0.89, 0.32, 1.28) forwards;
+}
+
+/* Letter celebration bounce */
+@keyframes letterCelebrateBounce {
+  0%, 100% { transform: translateY(0) scale(1); }
+  50% { transform: translateY(-8px) scale(1.06); }
+}
+
+.animate-letter-bounce {
+  animation: letterCelebrateBounce 0.65s ease-in-out infinite;
+}
+
+/* Pixel border utilities */
+.pixel-border {
+  box-shadow: 
+    -3px 0 0 0 #000,
+    3px 0 0 0 #000,
+    0 -3px 0 0 #000,
+    0 3px 0 0 #000;
+}
+

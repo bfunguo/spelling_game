@@ -1,0 +1,6 @@
+{
+  "name": "Super Spell Quest: Kids Adventure",
+  "description": "A vibrant Super Mario-inspired spelling game for kids featuring elementary school curriculum words, interactive companion guides, rewarding animations, and daily progress tracking.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
