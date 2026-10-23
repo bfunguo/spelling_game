@@ -59,7 +59,7 @@ export interface PlayerStats {
   voiceEnabled: boolean;
   keyboardLayout: 'qwerty' | 'alphabetical';
   caseMode: 'uppercase' | 'lowercase';
-  companionId: 'pip' | 'yoshi' | 'star' | 'dino';
+  companionId: 'toad' | 'yoshi' | 'star' | 'dino';
 }
 
 export interface WorldConfig {

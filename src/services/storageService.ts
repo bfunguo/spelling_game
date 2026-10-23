@@ -79,7 +79,7 @@ export const DEFAULT_STATS: PlayerStats = {
   voiceEnabled: true,
   keyboardLayout: 'qwerty',
   caseMode: 'uppercase',
-  companionId: 'pip',
+  companionId: 'toad',
 };
 
 export class StorageService {

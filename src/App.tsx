@@ -18,6 +18,7 @@ import { WorldSelectMap } from './components/WorldSelectMap';
 import { VictoryModal } from './components/VictoryModal';
 import { fireVictoryConfetti } from './components/AudioVisuals';
 import marioGrasslandBg from './assets/images/mario_world_grassland_1790692639852.jpg';
+import { FOOTER_CONFIG } from './config/footerConfig';
 
 const WORDS_PER_STAGE = 5;
 
@@ -386,9 +387,9 @@ export default function App() {
         <div className="w-full bg-amber-800 border-t-4 border-amber-950 py-2.5 px-4 text-center">
           <div className="max-w-4xl mx-auto flex items-center justify-between text-xs text-amber-200 font-bold">
             <span className="flex items-center gap-1.5">
-              <span>🍄 Super Spell Quest</span>
+              <span>🍄 {FOOTER_CONFIG.gameTitle}</span>
               <span aria-hidden="true">·</span>
-              <span>Elementary Phonics Standards</span>
+              <span>{FOOTER_CONFIG.curriculumText}</span>
             </span>
 
             <button
@@ -396,7 +397,7 @@ export default function App() {
               onClick={() => setShowParentDashboard(true)}
               className="text-amber-100 hover:text-white underline cursor-pointer"
             >
-              Parent & Teacher Progress Hub
+              {FOOTER_CONFIG.parentHubButtonText}
             </button>
           </div>
         </div>

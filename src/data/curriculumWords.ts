@@ -4507,8 +4507,8 @@ export const ELEMENTARY_WORDS: SpellingWord[] = [
 
 export const COMPANIONS = [
   {
-    id: 'pip' as const,
-    name: 'Pip the Mushroom',
+    id: 'toad' as const,
+    name: 'Toad the Mushroom',
     title: 'Speedy Adventurer',
     avatar: '🍄',
     personality: 'Energetic & Cheerful',
