@@ -15,9 +15,10 @@ import {
   Sliders,
   Volume2,
   Users,
+  RotateCcw,
 } from 'lucide-react';
 import { DailySummary, GradeLevel, PlayerStats, SpellingWord } from '../types/game';
-import { StorageService } from '../services/storageService';
+import { StorageService, DEFAULT_PROFILES } from '../services/storageService';
 import { soundService } from '../services/soundEffects';
 
 interface ParentDashboardProps {
@@ -42,6 +43,9 @@ export const ParentDashboard: React.FC<ParentDashboardProps> = ({
   const [pinChallengeSolved, setPinChallengeSolved] = useState(true);
   const [mathAnswer, setMathAnswer] = useState('');
   const [mathError, setMathError] = useState(false);
+  const [confirmResetProfileId, setConfirmResetProfileId] = useState<string | null>(null);
+  const [confirmGeneralReset, setConfirmGeneralReset] = useState<boolean>(false);
+  const [feedbackToast, setFeedbackToast] = useState<string | null>(null);
 
   // Daily summaries
   const dailySummaries = StorageService.getDailySummaries(stats.attemptsHistory);
@@ -145,12 +149,26 @@ export const ParentDashboard: React.FC<ParentDashboardProps> = ({
     onUpdateStats(updated);
   };
 
-  const handleResetProgress = () => {
-    if (window.confirm("Are you sure you want to reset all progress (coins, stars, mastery history) for this profile?")) {
-      const updated = StorageService.resetProgress(stats);
-      onUpdateStats(updated);
-      soundService.playGentleOops();
-    }
+  const handleExecuteResetProfile = (profileId: string, profileName: string) => {
+    const updated = StorageService.resetProfileProgress(stats, profileId);
+    onUpdateStats(updated);
+    setConfirmResetProfileId(null);
+    setFeedbackToast(`${profileName}'s progress has been reset to zero!`);
+    soundService.playGentleOops();
+    setTimeout(() => {
+      setFeedbackToast((current) => (current?.includes(profileName) ? null : current));
+    }, 3500);
+  };
+
+  const handleExecuteGeneralReset = () => {
+    const updated = StorageService.resetProgress(stats);
+    onUpdateStats(updated);
+    setConfirmGeneralReset(false);
+    setFeedbackToast("Active child's progress has been reset to zero!");
+    soundService.playGentleOops();
+    setTimeout(() => {
+      setFeedbackToast((current) => (current?.includes("Active child") ? null : current));
+    }, 3500);
   };
 
   return (
@@ -183,6 +201,23 @@ export const ParentDashboard: React.FC<ParentDashboardProps> = ({
             <X className="w-5 h-5" />
           </button>
         </div>
+
+        {/* Feedback Alert Banner */}
+        {feedbackToast && (
+          <div className="mb-3 px-3.5 py-2.5 bg-emerald-50 border border-emerald-300 rounded-2xl text-xs font-bold text-emerald-900 flex items-center justify-between shrink-0 animate-fadeIn shadow-sm">
+            <span className="flex items-center gap-2">
+              <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" />
+              <span>{feedbackToast}</span>
+            </span>
+            <button
+              type="button"
+              onClick={() => setFeedbackToast(null)}
+              className="text-emerald-700 hover:text-emerald-950 font-bold px-1.5 py-0.5 rounded cursor-pointer"
+            >
+              ✕
+            </button>
+          </div>
+        )}
 
         {/* Tab Navigation */}
         <div className="flex items-center gap-1.5 p-1 bg-slate-100 rounded-2xl mb-4 shrink-0 overflow-x-auto">
@@ -555,8 +590,11 @@ export const ParentDashboard: React.FC<ParentDashboardProps> = ({
 
             {/* Profiles List */}
             <div className="space-y-2">
-              {(stats.profiles || [{ id: stats.activeProfileId || 'profile_1', name: 'Super Adventurer', avatar: '⭐' }]).map((profile) => {
-                const isActive = profile.id === (stats.activeProfileId || 'profile_1');
+              {(stats.profiles && stats.profiles.length > 0 ? stats.profiles : DEFAULT_PROFILES).map((profile) => {
+                const isActive = profile.id === (stats.activeProfileId || DEFAULT_PROFILES[0].id);
+                const displayCoins = isActive ? stats.coins : (profile.coins ?? 0);
+                const displayStars = isActive ? stats.stars : (profile.stars ?? 0);
+
                 return (
                   <div
                     key={profile.id}
@@ -567,7 +605,7 @@ export const ParentDashboard: React.FC<ParentDashboardProps> = ({
                     }`}
                   >
                     <div className="flex items-center gap-3">
-                      <div className="w-10 h-10 rounded-xl bg-amber-100 border border-amber-200 flex items-center justify-center text-xl">
+                      <div className="w-10 h-10 rounded-xl bg-amber-100 border border-amber-200 flex items-center justify-center text-xl shrink-0">
                         {profile.avatar || '⭐'}
                       </div>
                       <div>
@@ -580,7 +618,7 @@ export const ParentDashboard: React.FC<ParentDashboardProps> = ({
                           )}
                         </div>
                         <div className="text-xs text-slate-500">
-                          {isActive ? `Coins: ${stats.coins} | Stars: ${stats.stars} ⭐` : 'Tap to switch profile'}
+                          Coins: {displayCoins} | Stars: {displayStars} ⭐
                         </div>
                       </div>
                     </div>
@@ -595,6 +633,38 @@ export const ParentDashboard: React.FC<ParentDashboardProps> = ({
                           Switch
                         </button>
                       )}
+
+                      {/* Reset Button placed right before the Trash icon */}
+                      {confirmResetProfileId === profile.id ? (
+                        <div className="flex items-center gap-1 bg-rose-50 border border-rose-300 rounded-xl px-2 py-1 shadow-sm">
+                          <span className="text-[11px] font-bold text-rose-900">Reset to 0?</span>
+                          <button
+                            type="button"
+                            onClick={() => handleExecuteResetProfile(profile.id, profile.name)}
+                            className="px-2 py-0.5 bg-rose-600 hover:bg-rose-700 text-white font-black text-[11px] rounded-lg cursor-pointer transition-colors shadow-sm"
+                          >
+                            Yes
+                          </button>
+                          <button
+                            type="button"
+                            onClick={() => setConfirmResetProfileId(null)}
+                            className="px-1.5 py-0.5 bg-slate-200 hover:bg-slate-300 text-slate-700 font-bold text-[11px] rounded-lg cursor-pointer transition-colors"
+                          >
+                            Cancel
+                          </button>
+                        </div>
+                      ) : (
+                        <button
+                          type="button"
+                          onClick={() => setConfirmResetProfileId(profile.id)}
+                          className="px-2.5 py-1.5 bg-amber-100 hover:bg-amber-200 text-amber-900 rounded-xl transition-colors cursor-pointer flex items-center gap-1 text-xs font-bold"
+                          title={`Reset ${profile.name}'s Progress`}
+                        >
+                          <RotateCcw className="w-3.5 h-3.5 text-amber-800" />
+                          <span>Reset</span>
+                        </button>
+                      )}
+
                       {(stats.profiles || []).length > 1 && (
                         <button
                           type="button"
@@ -766,20 +836,41 @@ export const ParentDashboard: React.FC<ParentDashboardProps> = ({
             </div>
 
             {/* Reset Progress Section */}
-            <div className="border border-rose-200 rounded-2xl p-4 bg-rose-50/50 flex items-center justify-between">
+            <div className="border border-rose-200 rounded-2xl p-4 bg-rose-50/50 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
               <div>
                 <h4 className="text-sm font-bold text-rose-900">Reset Child's Progress</h4>
                 <p className="text-xs text-rose-700">
                   Clear all coins, stars, streak, and word history for this profile.
                 </p>
               </div>
-              <button
-                type="button"
-                onClick={handleResetProgress}
-                className="px-4 py-2 bg-rose-600 hover:bg-rose-700 text-white font-bold rounded-xl text-xs cursor-pointer shadow"
-              >
-                Reset Progress
-              </button>
+              {confirmGeneralReset ? (
+                <div className="flex items-center gap-2 bg-rose-100 border border-rose-300 rounded-xl p-2 shrink-0">
+                  <span className="text-xs font-bold text-rose-900">Reset to 0?</span>
+                  <button
+                    type="button"
+                    onClick={handleExecuteGeneralReset}
+                    className="px-3 py-1.5 bg-rose-600 hover:bg-rose-700 text-white font-bold rounded-lg text-xs cursor-pointer shadow-sm transition-colors"
+                  >
+                    Yes, Reset
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setConfirmGeneralReset(false)}
+                    className="px-2.5 py-1.5 bg-slate-200 hover:bg-slate-300 text-slate-700 font-bold rounded-lg text-xs cursor-pointer transition-colors"
+                  >
+                    Cancel
+                  </button>
+                </div>
+              ) : (
+                <button
+                  type="button"
+                  onClick={() => setConfirmGeneralReset(true)}
+                  className="px-4 py-2 bg-rose-600 hover:bg-rose-700 text-white font-bold rounded-xl text-xs cursor-pointer shadow flex items-center gap-1.5 self-start sm:self-auto"
+                >
+                  <RotateCcw className="w-3.5 h-3.5" />
+                  <span>Reset Progress</span>
+                </button>
+              )}
             </div>
           </div>
         )}

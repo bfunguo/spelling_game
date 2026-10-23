@@ -48,6 +48,13 @@ export interface ChildProfile {
   id: string;
   name: string;
   avatar: string;
+  coins?: number;
+  stars?: number;
+  totalWordsMastered?: number;
+  currentStreak?: number;
+  attemptsHistory?: AttemptRecord[];
+  activeGrade?: GradeLevel;
+  currentWorld?: WorldId;
 }
 
 export interface PlayerStats {
@@ -81,4 +88,5 @@ export interface WorldConfig {
   brickStyle: string;
   icon: string;
   starsRequired: number;
+  bgImage?: string;
 }

@@ -12,6 +12,7 @@ export const WORLDS_CONFIG: WorldConfig[] = [
     brickStyle: 'bg-amber-700 border-amber-900',
     icon: '🍄',
     starsRequired: 0,
+    bgImage: '/src/assets/images/mario_world_grassland_1790692639852.jpg',
   },
   {
     id: 'world2',
@@ -24,6 +25,7 @@ export const WORLDS_CONFIG: WorldConfig[] = [
     brickStyle: 'bg-yellow-800 border-yellow-950',
     icon: '🌵',
     starsRequired: 3,
+    bgImage: '/src/assets/images/desert_dunes_world_1792782312862.jpg',
   },
   {
     id: 'world3',
@@ -36,6 +38,7 @@ export const WORLDS_CONFIG: WorldConfig[] = [
     brickStyle: 'bg-teal-800 border-teal-950',
     icon: '🐠',
     starsRequired: 6,
+    bgImage: '/src/assets/images/coral_cove_world_1792782313269.jpg',
   },
   {
     id: 'world4',
@@ -48,6 +51,7 @@ export const WORLDS_CONFIG: WorldConfig[] = [
     brickStyle: 'bg-purple-900 border-purple-950',
     icon: '⭐',
     starsRequired: 9,
+    bgImage: '/src/assets/images/starfall_heights_world_1792782313634.jpg',
   },
   {
     id: 'world5',
@@ -60,6 +64,7 @@ export const WORLDS_CONFIG: WorldConfig[] = [
     brickStyle: 'bg-stone-700 border-stone-900',
     icon: '👑',
     starsRequired: 12,
+    bgImage: '/src/assets/images/castle_champions_world_1792782314097.jpg',
   },
 ];
 

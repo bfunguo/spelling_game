@@ -7,7 +7,7 @@ import React, { useState, useEffect, useMemo, useCallback } from 'react';
 import { Sparkles, Trophy, RotateCcw } from 'lucide-react';
 import { GradeLevel, PlayerStats, SpellingWord, WorldId } from './types/game';
 import { ELEMENTARY_WORDS, WORLDS_CONFIG, COMPANIONS } from './data/curriculumWords';
-import { StorageService } from './services/storageService';
+import { StorageService, DEFAULT_PROFILES } from './services/storageService';
 import { soundService } from './services/soundEffects';
 import { PlatformerHeader } from './components/PlatformerHeader';
 import { WordVisualCard } from './components/WordVisualCard';
@@ -18,7 +18,19 @@ import { WorldSelectMap } from './components/WorldSelectMap';
 import { VictoryModal } from './components/VictoryModal';
 import { fireVictoryConfetti } from './components/AudioVisuals';
 import marioGrasslandBg from './assets/images/mario_world_grassland_1790692639852.jpg';
+import desertDunesBg from './assets/images/desert_dunes_world_1792782312862.jpg';
+import coralCoveBg from './assets/images/coral_cove_world_1792782313269.jpg';
+import starfallHeightsBg from './assets/images/starfall_heights_world_1792782313634.jpg';
+import castleChampionsBg from './assets/images/castle_champions_world_1792782314097.jpg';
 import { FOOTER_CONFIG } from './config/footerConfig';
+
+const WORLD_BACKGROUND_MAP: Record<WorldId, string> = {
+  world1: marioGrasslandBg,
+  world2: desertDunesBg,
+  world3: coralCoveBg,
+  world4: starfallHeightsBg,
+  world5: castleChampionsBg,
+};
 
 const WORDS_PER_STAGE = 5;
 
@@ -56,6 +68,12 @@ export default function App() {
   const currentWorld = useMemo(() => {
     return WORLDS_CONFIG.find((w) => w.id === stats.currentWorld) || WORLDS_CONFIG[0];
   }, [stats.currentWorld]);
+
+  // Active Child Profile
+  const activeChildProfile = useMemo(() => {
+    const list = stats.profiles && stats.profiles.length > 0 ? stats.profiles : DEFAULT_PROFILES;
+    return list.find((p) => p.id === stats.activeProfileId) || list[0];
+  }, [stats.profiles, stats.activeProfileId]);
 
   // Active Word List: filtered by active grade + custom words (randomized/shuffled when grade changes)
   const activeWordPool = useMemo(() => {
@@ -294,29 +312,81 @@ export default function App() {
     setStats(updated);
   };
 
+  // Active World Background
+  const activeWorldBg = useMemo(() => {
+    return WORLD_BACKGROUND_MAP[stats.currentWorld] || marioGrasslandBg;
+  }, [stats.currentWorld]);
+
   return (
     <div className="min-h-screen flex flex-col justify-between relative overflow-x-hidden bg-sky-400">
       {/* Platformer Background Scene */}
       <div className="fixed inset-0 pointer-events-none z-0 overflow-hidden">
         {/* Sky with gradient fallback */}
-        <div className={`absolute inset-0 bg-gradient-to-b ${currentWorld.bgGradient} opacity-95`} />
+        <div className={`absolute inset-0 bg-gradient-to-b ${currentWorld.bgGradient} opacity-90 transition-colors duration-700`} />
 
-        {/* Mario Grassland Background Image overlay */}
+        {/* Dynamic Themed World Background Image overlay */}
         <div
-          className="absolute inset-0 bg-cover bg-bottom opacity-35 mix-blend-multiply"
-          style={{ backgroundImage: `url(${marioGrasslandBg})` }}
+          className="absolute inset-0 bg-cover bg-bottom bg-no-repeat transition-all duration-700 ease-in-out opacity-40 mix-blend-multiply"
+          style={{ backgroundImage: `url(${activeWorldBg})` }}
         />
 
-        {/* Mario Style Floating Animated Clouds */}
-        <div className="absolute top-12 left-10 text-white/50 text-6xl animate-mario-float select-none">
-          ☁️
-        </div>
-        <div
-          className="absolute top-24 right-16 text-white/50 text-5xl animate-mario-float select-none"
-          style={{ animationDelay: '1.5s' }}
-        >
-          ☁️
-        </div>
+        {/* Themed ambient floating elements */}
+        {stats.currentWorld === 'world1' && (
+          <>
+            <div className="absolute top-12 left-10 text-white/50 text-6xl animate-mario-float select-none">
+              ☁️
+            </div>
+            <div
+              className="absolute top-24 right-16 text-white/50 text-5xl animate-mario-float select-none"
+              style={{ animationDelay: '1.5s' }}
+            >
+              ☁️
+            </div>
+          </>
+        )}
+        {stats.currentWorld === 'world2' && (
+          <>
+            <div className="absolute top-8 right-12 text-yellow-200/60 text-6xl animate-pulse select-none">
+              ☀️
+            </div>
+            <div className="absolute top-28 left-16 text-amber-300/40 text-4xl animate-mario-float select-none">
+              ✨
+            </div>
+          </>
+        )}
+        {stats.currentWorld === 'world3' && (
+          <>
+            <div className="absolute top-16 left-12 text-cyan-200/50 text-5xl animate-bounce select-none" style={{ animationDuration: '3s' }}>
+              🫧
+            </div>
+            <div className="absolute top-28 right-20 text-cyan-200/40 text-4xl animate-bounce select-none" style={{ animationDuration: '4s' }}>
+              🫧
+            </div>
+          </>
+        )}
+        {stats.currentWorld === 'world4' && (
+          <>
+            <div className="absolute top-10 left-16 text-yellow-300/60 text-4xl animate-pulse select-none">
+              ⭐
+            </div>
+            <div className="absolute top-20 right-14 text-indigo-200/60 text-5xl animate-mario-float select-none">
+              ✨
+            </div>
+            <div className="absolute top-36 left-1/3 text-pink-300/50 text-3xl animate-ping select-none" style={{ animationDuration: '4s' }}>
+              🌟
+            </div>
+          </>
+        )}
+        {stats.currentWorld === 'world5' && (
+          <>
+            <div className="absolute top-10 left-12 text-amber-400/50 text-4xl animate-pulse select-none">
+              🔥
+            </div>
+            <div className="absolute top-20 right-16 text-red-300/40 text-5xl animate-pulse select-none" style={{ animationDelay: '1s' }}>
+              👑
+            </div>
+          </>
+        )}
       </div>
 
       {/* Top HUD Header */}
@@ -341,10 +411,10 @@ export default function App() {
           <MarioCompanion
             message={companionDialogue}
             mood={companionMood}
-            companionName={COMPANIONS[0].name}
+            childProfileName={activeChildProfile.name}
             pronounceText={currentWord.word}
             onCompanionClick={() => {
-              soundService.speakSentence("Tap the picture to hear it!");
+              soundService.speakSentence(companionDialogue);
             }}
           />
         </div>

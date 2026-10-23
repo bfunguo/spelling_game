@@ -7,6 +7,7 @@ interface MarioCompanionProps {
   message: string;
   mood: 'idle' | 'happy' | 'celebrating' | 'thinking' | 'encouraging';
   companionName?: string;
+  childProfileName?: string;
   onCompanionClick?: () => void;
   pronounceText?: string;
 }
@@ -14,15 +15,24 @@ interface MarioCompanionProps {
 export const MarioCompanion: React.FC<MarioCompanionProps> = ({
   message,
   mood,
-  companionName = 'Pip the Mushroom',
+  companionName,
+  childProfileName,
   onCompanionClick,
   pronounceText,
 }) => {
   const [imgError, setImgError] = useState(false);
 
+  const displayGreeting = childProfileName
+    ? `Welcome ${childProfileName}`
+    : companionName?.startsWith('Welcome')
+    ? companionName
+    : companionName
+    ? `Welcome ${companionName}`
+    : 'Welcome';
+
   const handleSpeak = (e: React.MouseEvent) => {
     e.stopPropagation();
-    soundService.speakSentence("Tap the picture to hear it!");
+    soundService.speakSentence(message || "Tap the picture to hear it!");
   };
 
   const getMoodStyle = () => {
@@ -87,10 +97,10 @@ export const MarioCompanion: React.FC<MarioCompanionProps> = ({
         <div className="flex items-start justify-between gap-2">
           <div>
             <div className="text-[11px] font-bold text-amber-800 tracking-wide uppercase">
-              {companionName}
+              {displayGreeting}
             </div>
             <p className="text-slate-800 font-semibold text-sm sm:text-base leading-snug">
-              Tap the picture to hear it!
+              {message || "Tap the picture to hear it!"}
             </p>
           </div>
 

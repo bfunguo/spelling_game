@@ -3,6 +3,19 @@ import { Lock, Star, ChevronRight, X, Trophy } from 'lucide-react';
 import { WorldConfig, WorldId, GradeLevel } from '../types/game';
 import { WORLDS_CONFIG } from '../data/curriculumWords';
 import { soundService } from '../services/soundEffects';
+import marioGrasslandBg from '../assets/images/mario_world_grassland_1790692639852.jpg';
+import desertDunesBg from '../assets/images/desert_dunes_world_1792782312862.jpg';
+import coralCoveBg from '../assets/images/coral_cove_world_1792782313269.jpg';
+import starfallHeightsBg from '../assets/images/starfall_heights_world_1792782313634.jpg';
+import castleChampionsBg from '../assets/images/castle_champions_world_1792782314097.jpg';
+
+const WORLD_BG_MAP: Record<WorldId, string> = {
+  world1: marioGrasslandBg,
+  world2: desertDunesBg,
+  world3: coralCoveBg,
+  world4: starfallHeightsBg,
+  world5: castleChampionsBg,
+};
 
 interface WorldSelectMapProps {
   currentWorldId: WorldId;
@@ -86,10 +99,19 @@ export const WorldSelectMap: React.FC<WorldSelectMapProps> = ({
                     : 'bg-slate-100 border-slate-300 opacity-70 cursor-not-allowed'
                 }`}
               >
-                {/* World Icon & Details */}
+                {/* World Artwork Thumbnail & Icon */}
                 <div className="flex items-center gap-3">
-                  <div className="w-12 h-12 sm:w-14 sm:h-14 rounded-2xl bg-amber-200 border-2 border-amber-700 flex items-center justify-center text-2xl sm:text-3xl shrink-0">
-                    {isUnlocked ? world.icon : '🔒'}
+                  <div className="w-16 h-14 sm:w-20 sm:h-16 rounded-2xl border-2 border-amber-800 shrink-0 relative overflow-hidden shadow-sm bg-slate-900 flex items-center justify-center">
+                    <img
+                      src={WORLD_BG_MAP[world.id]}
+                      alt={world.name}
+                      className={`absolute inset-0 w-full h-full object-cover transition-transform duration-300 ${
+                        isUnlocked ? 'group-hover:scale-105' : 'grayscale opacity-40'
+                      }`}
+                    />
+                    <div className="relative z-10 w-8 h-8 rounded-full bg-black/40 backdrop-blur-[2px] flex items-center justify-center text-lg sm:text-xl drop-shadow">
+                      {isUnlocked ? world.icon : '🔒'}
+                    </div>
                   </div>
 
                   <div>
