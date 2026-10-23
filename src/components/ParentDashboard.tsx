@@ -14,6 +14,7 @@ import {
   BarChart3,
   Sliders,
   Volume2,
+  Users,
 } from 'lucide-react';
 import { DailySummary, GradeLevel, PlayerStats, SpellingWord } from '../types/game';
 import { StorageService } from '../services/storageService';
@@ -30,7 +31,9 @@ export const ParentDashboard: React.FC<ParentDashboardProps> = ({
   onUpdateStats,
   onClose,
 }) => {
-  const [activeTab, setActiveTab] = useState<'progress' | 'words' | 'custom' | 'settings'>('progress');
+  const [activeTab, setActiveTab] = useState<'progress' | 'words' | 'custom' | 'profiles' | 'settings'>('progress');
+  const [newProfileName, setNewProfileName] = useState('');
+  const [newProfileAvatar, setNewProfileAvatar] = useState('⭐');
   const [customWordInput, setCustomWordInput] = useState('');
   const [customHintInput, setCustomHintInput] = useState('');
   const [customCategoryInput, setCustomCategoryInput] = useState<'School' | 'Everyday' | 'Adventure'>('School');
@@ -122,6 +125,34 @@ export const ParentDashboard: React.FC<ParentDashboardProps> = ({
     onUpdateStats(updated);
   };
 
+  const handleCreateProfile = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!newProfileName.trim()) return;
+    const updated = StorageService.createProfile(stats, newProfileName, newProfileAvatar);
+    onUpdateStats(updated);
+    setNewProfileName('');
+    soundService.play1Up();
+  };
+
+  const handleSwitchProfile = (id: string) => {
+    const updated = StorageService.switchProfile(stats, id);
+    onUpdateStats(updated);
+  };
+
+  const handleRemoveProfile = (id: string) => {
+    if (!stats.profiles || stats.profiles.length <= 1) return;
+    const updated = StorageService.removeProfile(stats, id);
+    onUpdateStats(updated);
+  };
+
+  const handleResetProgress = () => {
+    if (window.confirm("Are you sure you want to reset all progress (coins, stars, mastery history) for this profile?")) {
+      const updated = StorageService.resetProgress(stats);
+      onUpdateStats(updated);
+      soundService.playGentleOops();
+    }
+  };
+
   return (
     <div className="fixed inset-0 z-50 bg-black/70 backdrop-blur-sm flex items-center justify-center p-3 sm:p-6 overflow-y-auto animate-fadeIn">
       <div className="relative w-full max-w-3xl bg-white rounded-3xl border-4 border-slate-900 shadow-2xl p-4 sm:p-7 my-auto text-slate-900 max-h-[92vh] flex flex-col">
@@ -192,6 +223,19 @@ export const ParentDashboard: React.FC<ParentDashboardProps> = ({
           >
             <Plus className="w-4 h-4" />
             <span>Custom Word Lists</span>
+          </button>
+
+          <button
+            type="button"
+            onClick={() => setActiveTab('profiles')}
+            className={`px-3.5 py-2 text-xs sm:text-sm font-bold rounded-xl transition-colors whitespace-nowrap cursor-pointer flex items-center gap-1.5 ${
+              activeTab === 'profiles'
+                ? 'bg-white text-indigo-900 shadow-sm'
+                : 'text-slate-600 hover:text-slate-900'
+            }`}
+          >
+            <Users className="w-4 h-4" />
+            <span>Child Profiles ({stats.profiles?.length || 1})</span>
           </button>
 
           <button
@@ -472,6 +516,103 @@ export const ParentDashboard: React.FC<ParentDashboardProps> = ({
           </div>
         )}
 
+        {/* Tab: Child Profiles */}
+        {activeTab === 'profiles' && (
+          <div className="space-y-4 overflow-y-auto pr-1 flex-1">
+            <div className="bg-indigo-50/70 border border-indigo-100 rounded-2xl p-4">
+              <h3 className="text-sm font-bold text-indigo-900 mb-1">Child Profiles</h3>
+              <p className="text-xs text-indigo-700 mb-3">
+                Create separate profiles for multiple children so each child tracks their own coins, stars, streak, and spelling progress.
+              </p>
+
+              {/* Create Profile Form */}
+              <form onSubmit={handleCreateProfile} className="flex flex-col sm:flex-row gap-2 bg-white p-3 rounded-xl border border-indigo-200">
+                <select
+                  value={newProfileAvatar}
+                  onChange={(e) => setNewProfileAvatar(e.target.value)}
+                  className="px-3 py-2 rounded-xl border border-slate-200 text-sm font-bold bg-slate-50 cursor-pointer"
+                >
+                  {['⭐', '🦖', '🦄', '🚀', '🐱', '🦊', '🦁', '🐼', '🐸', '🐨'].map((av) => (
+                    <option key={av} value={av}>{av} Avatar</option>
+                  ))}
+                </select>
+                <input
+                  type="text"
+                  placeholder="Child's Name..."
+                  value={newProfileName}
+                  onChange={(e) => setNewProfileName(e.target.value)}
+                  className="flex-1 px-3 py-2 rounded-xl border border-slate-200 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                />
+                <button
+                  type="submit"
+                  disabled={!newProfileName.trim()}
+                  className="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 disabled:opacity-50 text-white font-bold rounded-xl text-xs sm:text-sm cursor-pointer shadow"
+                >
+                  Create Profile
+                </button>
+              </form>
+            </div>
+
+            {/* Profiles List */}
+            <div className="space-y-2">
+              {(stats.profiles || [{ id: stats.activeProfileId || 'profile_1', name: 'Super Adventurer', avatar: '⭐' }]).map((profile) => {
+                const isActive = profile.id === (stats.activeProfileId || 'profile_1');
+                return (
+                  <div
+                    key={profile.id}
+                    className={`flex items-center justify-between p-3 rounded-2xl border transition-all ${
+                      isActive
+                        ? 'bg-emerald-50 border-emerald-300 shadow-sm'
+                        : 'bg-white border-slate-200 hover:bg-slate-50'
+                    }`}
+                  >
+                    <div className="flex items-center gap-3">
+                      <div className="w-10 h-10 rounded-xl bg-amber-100 border border-amber-200 flex items-center justify-center text-xl">
+                        {profile.avatar || '⭐'}
+                      </div>
+                      <div>
+                        <div className="font-bold text-slate-900 flex items-center gap-2">
+                          <span>{profile.name}</span>
+                          {isActive && (
+                            <span className="px-2 py-0.5 bg-emerald-600 text-white text-[10px] font-extrabold rounded-full">
+                              Active
+                            </span>
+                          )}
+                        </div>
+                        <div className="text-xs text-slate-500">
+                          {isActive ? `Coins: ${stats.coins} | Stars: ${stats.stars} ⭐` : 'Tap to switch profile'}
+                        </div>
+                      </div>
+                    </div>
+
+                    <div className="flex items-center gap-2">
+                      {!isActive && (
+                        <button
+                          type="button"
+                          onClick={() => handleSwitchProfile(profile.id)}
+                          className="px-3 py-1.5 bg-indigo-100 hover:bg-indigo-200 text-indigo-900 font-bold rounded-xl text-xs cursor-pointer transition-colors"
+                        >
+                          Switch
+                        </button>
+                      )}
+                      {(stats.profiles || []).length > 1 && (
+                        <button
+                          type="button"
+                          onClick={() => handleRemoveProfile(profile.id)}
+                          className="p-2 bg-rose-100 hover:bg-rose-200 text-rose-700 rounded-xl transition-colors cursor-pointer"
+                          title="Delete Profile"
+                        >
+                          <Trash2 className="w-4 h-4" />
+                        </button>
+                      )}
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+        )}
+
         {/* Tab 4: Curriculum Standards & Child Preferences */}
         {activeTab === 'settings' && (
           <div className="space-y-4 overflow-y-auto pr-1 flex-1">
@@ -621,6 +762,23 @@ export const ParentDashboard: React.FC<ParentDashboardProps> = ({
                 }`}
               >
                 {stats.voiceEnabled ? 'Enabled' : 'Disabled'}
+              </button>
+            </div>
+
+            {/* Reset Progress Section */}
+            <div className="border border-rose-200 rounded-2xl p-4 bg-rose-50/50 flex items-center justify-between">
+              <div>
+                <h4 className="text-sm font-bold text-rose-900">Reset Child's Progress</h4>
+                <p className="text-xs text-rose-700">
+                  Clear all coins, stars, streak, and word history for this profile.
+                </p>
+              </div>
+              <button
+                type="button"
+                onClick={handleResetProgress}
+                className="px-4 py-2 bg-rose-600 hover:bg-rose-700 text-white font-bold rounded-xl text-xs cursor-pointer shadow"
+              >
+                Reset Progress
               </button>
             </div>
           </div>

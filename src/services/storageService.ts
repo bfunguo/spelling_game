@@ -3,6 +3,10 @@ import { AttemptRecord, DailySummary, GradeLevel, PlayerStats, SpellingWord, Wor
 const STORAGE_KEY = 'super_spell_quest_save_v1';
 
 export const DEFAULT_STATS: PlayerStats = {
+  profiles: [
+    { id: 'profile_1', name: 'Super Adventurer', avatar: '⭐' }
+  ],
+  activeProfileId: 'profile_1',
   coins: 40,
   stars: 3,
   totalWordsMastered: 8,
@@ -10,7 +14,6 @@ export const DEFAULT_STATS: PlayerStats = {
   lastActiveDate: new Date().toISOString().split('T')[0],
   unlockedWorlds: ['world1', 'world2'],
   attemptsHistory: [
-    // Pre-populate realistic sample history for parent dashboard to demonstrate immediately
     {
       id: 'sample-1',
       word: 'CAT',
@@ -185,6 +188,61 @@ export class StorageService {
     const updated: PlayerStats = {
       ...stats,
       customWords: stats.customWords.filter((w) => w.id !== id),
+    };
+    this.saveStats(updated);
+    return updated;
+  }
+
+  public static createProfile(stats: PlayerStats, name: string, avatar: string): PlayerStats {
+    const newId = `profile_${Date.now()}`;
+    const newProfile = { id: newId, name: name.trim() || 'New Explorer', avatar: avatar || '⭐' };
+    const updated: PlayerStats = {
+      ...stats,
+      profiles: [...stats.profiles, newProfile],
+      activeProfileId: newId,
+      coins: 20,
+      stars: 0,
+      totalWordsMastered: 0,
+      currentStreak: 0,
+      attemptsHistory: [],
+      customWords: [],
+    };
+    this.saveStats(updated);
+    return updated;
+  }
+
+  public static removeProfile(stats: PlayerStats, profileId: string): PlayerStats {
+    if (stats.profiles.length <= 1) return stats;
+    const remaining = stats.profiles.filter((p) => p.id !== profileId);
+    const nextActiveId = remaining[0].id;
+    const updated: PlayerStats = {
+      ...stats,
+      profiles: remaining,
+      activeProfileId: stats.activeProfileId === profileId ? nextActiveId : stats.activeProfileId,
+    };
+    this.saveStats(updated);
+    return updated;
+  }
+
+  public static switchProfile(stats: PlayerStats, profileId: string): PlayerStats {
+    const target = stats.profiles.find((p) => p.id === profileId);
+    if (!target) return stats;
+    const updated: PlayerStats = {
+      ...stats,
+      activeProfileId: profileId,
+    };
+    this.saveStats(updated);
+    return updated;
+  }
+
+  public static resetProgress(stats: PlayerStats): PlayerStats {
+    const updated: PlayerStats = {
+      ...stats,
+      coins: 0,
+      stars: 0,
+      totalWordsMastered: 0,
+      currentStreak: 0,
+      attemptsHistory: [],
     };
     this.saveStats(updated);
     return updated;

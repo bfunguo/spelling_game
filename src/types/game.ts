@@ -44,7 +44,15 @@ export interface DailySummary {
   minutesSpent: number;
 }
 
+export interface ChildProfile {
+  id: string;
+  name: string;
+  avatar: string;
+}
+
 export interface PlayerStats {
+  profiles: ChildProfile[];
+  activeProfileId: string;
   coins: number;
   stars: number;
   totalWordsMastered: number;
