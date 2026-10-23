@@ -1,0 +1,39 @@
+{
+  "id": "/",
+  "name": "Super Spell Quest: Kids Adventure",
+  "short_name": "SpellQuest",
+  "description": "A vibrant Super Mario-inspired spelling game for kids featuring elementary school curriculum words, interactive companion guides, rewarding animations, and daily progress tracking.",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "orientation": "portrait",
+  "theme_color": "#0284c7",
+  "background_color": "#38bdf8",
+  "lang": "en",
+  "dir": "ltr",
+  "categories": [
+    "education",
+    "games",
+    "kids"
+  ],
+  "icons": [
+    {
+      "src": "/pwa-192x192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/pwa-512x512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/pwa-maskable-512x512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    }
+  ]
+}

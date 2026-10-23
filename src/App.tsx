@@ -17,6 +17,7 @@ import { ParentDashboard } from './components/ParentDashboard';
 import { WorldSelectMap } from './components/WorldSelectMap';
 import { VictoryModal } from './components/VictoryModal';
 import { MathClueModal } from './components/MathClueModal';
+import { OfflineIndicator } from './components/OfflineIndicator';
 import { fireVictoryConfetti } from './components/AudioVisuals';
 import marioGrasslandBg from './assets/images/mario_world_grassland_1790692639852.jpg';
 import desertDunesBg from './assets/images/desert_dunes_world_1792782312862.jpg';
@@ -551,6 +552,9 @@ export default function App() {
           onClose={() => setShowMathParentsModal(false)}
         />
       )}
+
+      {/* Connectivity Status Banner */}
+      <OfflineIndicator />
     </div>
   );
 }

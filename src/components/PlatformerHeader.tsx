@@ -1,6 +1,7 @@
 import React from 'react';
 import { Volume2, VolumeX, Shield, Map, Flame } from 'lucide-react';
 import { soundService } from '../services/soundEffects';
+import { PWAInstallButton } from './PWAInstallButton';
 
 interface PlatformerHeaderProps {
   worldName: string;
@@ -112,6 +113,9 @@ export const PlatformerHeader: React.FC<PlatformerHeaderProps> = ({
           >
             {soundEnabled ? <Volume2 className="w-4 h-4" /> : <VolumeX className="w-4 h-4 text-rose-400" />}
           </button>
+
+          {/* PWA Install Button (auto-hides when installed or running as standalone app) */}
+          <PWAInstallButton />
 
           {/* Parent Zone Button */}
           <button
