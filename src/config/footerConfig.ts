@@ -6,6 +6,6 @@ export interface FooterConfig {
 
 export const FOOTER_CONFIG: FooterConfig = {
   gameTitle: "Super Spell Quest",
-  curriculumText: "Build 2.0",
+  curriculumText: "Build 2.2",
   parentHubButtonText: "Parent & Teacher Progress Hub",
 };
