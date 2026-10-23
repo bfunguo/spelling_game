@@ -16,7 +16,7 @@ export interface SpellingWord {
   id: string;
   word: string; // e.g. "APPLE"
   grade: GradeLevel;
-  category: 'Animals' | 'Nature' | 'School' | 'Food' | 'Space' | 'Adventure' | 'Everyday';
+  category: string;
   hint: string;
   exampleSentence: string;
   phonicsClue: string;

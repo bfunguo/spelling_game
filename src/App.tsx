@@ -56,13 +56,27 @@ export default function App() {
     return WORLDS_CONFIG.find((w) => w.id === stats.currentWorld) || WORLDS_CONFIG[0];
   }, [stats.currentWorld]);
 
-  // Active Word List: filtered by active grade + custom words
+  // Active Word List: filtered by active grade + custom words (randomized/shuffled when grade changes)
   const activeWordPool = useMemo(() => {
     const defaultWords = ELEMENTARY_WORDS.filter((w) => w.grade === stats.activeGrade);
     const customForGrade = stats.customWords.filter((w) => w.grade === stats.activeGrade);
     const pool = [...customForGrade, ...defaultWords];
-    return pool.length > 0 ? pool : ELEMENTARY_WORDS;
+    const basePool = pool.length > 0 ? pool : ELEMENTARY_WORDS;
+
+    const shuffled = [...basePool];
+    for (let i = shuffled.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+    }
+    return shuffled;
   }, [stats.activeGrade, stats.customWords]);
+
+  // Reset stage & index when active grade changes
+  useEffect(() => {
+    setCurrentWordIndexInStage(0);
+    setStageNumber(1);
+    setStageCompletedWords([]);
+  }, [stats.activeGrade]);
 
   // Current Word
   const currentWord: SpellingWord = useMemo(() => {
