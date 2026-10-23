@@ -118,7 +118,7 @@ export const PlatformerHeader: React.FC<PlatformerHeaderProps> = ({
             type="button"
             onClick={onOpenParents}
             className="flex items-center gap-1.5 px-2.5 py-1.5 bg-indigo-600 hover:bg-indigo-500 active:bg-indigo-700 text-white font-bold rounded-xl text-xs border-b-2 border-indigo-900 shadow cursor-pointer transition-all"
-            title="Open Parent Dashboard and Progress Tracker"
+            title="Open Parent Dashboard (Math Gate Protected)"
           >
             <Shield className="w-3.5 h-3.5" />
             <span className="hidden sm:inline">Parents</span>

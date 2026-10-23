@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Volume2, Sparkles, HelpCircle } from 'lucide-react';
+import { Volume2, Sparkles, HelpCircle, Lock } from 'lucide-react';
 import { SpellingWord } from '../types/game';
 import { soundService } from '../services/soundEffects';
 import questionBlockImg from '../assets/images/mario_quest_block_1790692679226.jpg';
@@ -61,7 +61,7 @@ export const WordVisualCard: React.FC<WordVisualCardProps> = ({
 
         {/* Category & Word Level Kicker */}
         <div className="flex items-center justify-between text-xs font-bold text-amber-900 mb-2 px-1">
-          <div className="flex items-center gap-1.5 bg-amber-200/80 px-2.5 py-1 rounded-full border border-amber-400">
+          <div className="flex items-center gap-1.5 bg-amber-200/80 px-3 py-1.5 rounded-full border border-amber-400 shadow-sm">
             <span>{currentWord.category}</span>
             <span>·</span>
             <span>{currentWord.word.length} Letters</span>
@@ -69,10 +69,23 @@ export const WordVisualCard: React.FC<WordVisualCardProps> = ({
 
           <button
             type="button"
-            onClick={onToggleClue}
-            className="flex items-center gap-1 text-amber-800 hover:text-amber-950 font-semibold cursor-pointer underline text-xs"
+            onClick={() => {
+              soundService.playKeyTap();
+              onToggleClue();
+            }}
+            className={`px-3 py-1.5 rounded-xl border-2 font-black text-xs cursor-pointer transition-all duration-150 flex items-center gap-1.5 shadow-sm active:translate-y-0.5 select-none ${
+              showPhonicsClue
+                ? 'bg-amber-300 hover:bg-amber-400 border-amber-600 text-amber-950 shadow-inner'
+                : 'bg-white hover:bg-amber-100 border-amber-400 text-amber-900 shadow hover:border-amber-500'
+            }`}
+            title={showPhonicsClue ? 'Hide Clue' : 'Solve math question to reveal clue'}
+            aria-pressed={showPhonicsClue}
           >
-            <HelpCircle className="w-3.5 h-3.5" />
+            {showPhonicsClue ? (
+              <HelpCircle className="w-4 h-4 text-amber-950" />
+            ) : (
+              <Lock className="w-3.5 h-3.5 text-amber-700" />
+            )}
             <span>{showPhonicsClue ? 'Hide Clue' : 'Need Clue?'}</span>
           </button>
         </div>

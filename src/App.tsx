@@ -16,6 +16,7 @@ import { MarioCompanion } from './components/MarioCompanion';
 import { ParentDashboard } from './components/ParentDashboard';
 import { WorldSelectMap } from './components/WorldSelectMap';
 import { VictoryModal } from './components/VictoryModal';
+import { MathClueModal } from './components/MathClueModal';
 import { fireVictoryConfetti } from './components/AudioVisuals';
 import marioGrasslandBg from './assets/images/mario_world_grassland_1790692639852.jpg';
 import desertDunesBg from './assets/images/desert_dunes_world_1792782312862.jpg';
@@ -55,6 +56,8 @@ export default function App() {
   const [showParentDashboard, setShowParentDashboard] = useState(false);
   const [showWorldMap, setShowWorldMap] = useState(false);
   const [showStageVictory, setShowStageVictory] = useState(false);
+  const [showMathClueModal, setShowMathClueModal] = useState(false);
+  const [showMathParentsModal, setShowMathParentsModal] = useState(false);
   const [companionMood, setCompanionMood] = useState<'idle' | 'happy' | 'celebrating' | 'thinking' | 'encouraging'>('idle');
   const [companionDialogue, setCompanionDialogue] = useState<string>("Tap the picture to hear it!");
 
@@ -110,6 +113,8 @@ export default function App() {
     setIsSuccess(false);
     setIsError(false);
     setShowPhonicsClue(false);
+    setShowMathClueModal(false);
+    setShowMathParentsModal(false);
 
     // Hint Calculation: 35% of total letter count, rounded up
     const maxHints = Math.ceil(currentWord.word.length * 0.35);
@@ -132,7 +137,7 @@ export default function App() {
   // Handle Letter Submission Check
   const handleLetterInput = useCallback(
     (letter: string) => {
-      if (isSuccess || showParentDashboard || showWorldMap || showStageVictory) return;
+      if (isSuccess || showParentDashboard || showWorldMap || showStageVictory || showMathClueModal || showMathParentsModal) return;
 
       const upperLetter = letter.toUpperCase();
       const targetWord = currentWord.word.toUpperCase();
@@ -211,6 +216,8 @@ export default function App() {
       showParentDashboard,
       showWorldMap,
       showStageVictory,
+      showMathClueModal,
+      showMathParentsModal,
       currentWord,
       userLetters,
       hiddenLetters,
@@ -255,7 +262,7 @@ export default function App() {
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
       // Don't intercept if parent modal or text input is active
-      if (showParentDashboard || showWorldMap || showStageVictory) return;
+      if (showParentDashboard || showWorldMap || showStageVictory || showMathClueModal || showMathParentsModal) return;
       if (e.target instanceof HTMLInputElement || e.target instanceof HTMLTextAreaElement) return;
 
       if (e.key === 'Backspace') {
@@ -276,6 +283,8 @@ export default function App() {
     showParentDashboard,
     showWorldMap,
     showStageVictory,
+    showMathClueModal,
+    showMathParentsModal,
     handleBackspace,
     handleLetterInput,
     currentWord,
@@ -401,7 +410,7 @@ export default function App() {
         soundEnabled={stats.soundEnabled}
         onToggleSound={handleToggleSound}
         onOpenMap={() => setShowWorldMap(true)}
-        onOpenParents={() => setShowParentDashboard(true)}
+        onOpenParents={() => setShowMathParentsModal(true)}
       />
 
       {/* Main Interactive Stage */}
@@ -427,7 +436,13 @@ export default function App() {
             isSuccess={isSuccess}
             isError={isError}
             showPhonicsClue={showPhonicsClue}
-            onToggleClue={() => setShowPhonicsClue(!showPhonicsClue)}
+            onToggleClue={() => {
+              if (showPhonicsClue) {
+                setShowPhonicsClue(false);
+              } else {
+                setShowMathClueModal(true);
+              }
+            }}
             caseMode={stats.caseMode}
           />
         </div>
@@ -464,7 +479,7 @@ export default function App() {
 
             <button
               type="button"
-              onClick={() => setShowParentDashboard(true)}
+              onClick={() => setShowMathParentsModal(true)}
               className="text-amber-100 hover:text-white underline cursor-pointer"
             >
               {FOOTER_CONFIG.parentHubButtonText}
@@ -502,6 +517,38 @@ export default function App() {
           starsEarned={1}
           wordsSpelled={stageCompletedWords}
           onContinue={handleNextStage}
+        />
+      )}
+
+      {/* Math Single-Digit Multiplication Gate Modal for Need Clue */}
+      {showMathClueModal && (
+        <MathClueModal
+          title="Unlock Phonics Clue"
+          subtitle="Multiply the two numbers to reveal the clue!"
+          badgeText="Math Gate · Single Digit"
+          submitButtonText="Unlock Clue"
+          successMessage="Correct! Unlocking Clue..."
+          onSuccess={() => {
+            setShowPhonicsClue(true);
+            setShowMathClueModal(false);
+          }}
+          onClose={() => setShowMathClueModal(false)}
+        />
+      )}
+
+      {/* Math Single-Digit Multiplication Gate Modal for Parents Hub */}
+      {showMathParentsModal && (
+        <MathClueModal
+          title="Parent / Teacher Zone"
+          subtitle="Multiply the two numbers to access settings & profiles!"
+          badgeText="Adult Verification · Math Gate"
+          submitButtonText="Enter Parent Hub"
+          successMessage="Access Granted! Opening Dashboard..."
+          onSuccess={() => {
+            setShowMathParentsModal(false);
+            setShowParentDashboard(true);
+          }}
+          onClose={() => setShowMathParentsModal(false)}
         />
       )}
     </div>
